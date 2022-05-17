@@ -1,0 +1,58 @@
+/*
+ * Copyright (C) 2018 Icenowy Zheng <icenowy@aosc.io>
+ *
+ * SPDX-License-Identifier: (GPL-2.0+ OR X11)
+ */
+
+#include "sun8i-v3s-licheepi-zero.dts"
+
+&i2c1 {
+	pinctrl-names = "default";
+        pinctrl-0 = <&i2c1_pins>;
+	status = "okay";
+
+        ov2640: camera@30 {
+	compatible = "ovti,ov2640";
+	reg = <0x30>;
+	pinctrl-0 = <&csi1_mclk>;
+	pinctrl-names = "default";
+	clocks = <&ccu CLK_CSI1_MCLK>;
+	clock-names = "xvclk";
+	assigned-clock-rates = <24000000>;
+
+		port {
+			ov2640_ep: endpoint {
+				remote-endpoint = <&csi1_ep>;
+				bus-width = <10>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				pclk-sample = <1>;
+			};
+		};
+	};
+};
+
+&csi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&csi1_clk &csi1_8bit>;
+	status = "okay";
+
+	port {
+		csi1_ep: endpoint {
+			remote-endpoint = <&ov2640_ep>;
+			bus-width = <12>;
+			hsync-active = <0>;
+			vsync-active = <0>;
+			pclk-sample = <1>;
+		};
+	};
+};
+
+&ion {
+	status = "okay";
+};
+
+&cedarx {
+	status = "okay";
+};
+

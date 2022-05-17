@@ -43,6 +43,7 @@
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/clock/sun8i-v3s-ccu.h>
 #include <dt-bindings/reset/sun8i-v3s-ccu.h>
+#include <dt-bindings/pinctrl/sun4i-a10.h>
 
 / {
 	#address-cells = <1>;
@@ -54,14 +55,14 @@
 		#size-cells = <1>;
 		ranges;
 
-		// simplefb_lcd: framebuffer@0 {
-		// 	compatible = "allwinner,simple-framebuffer",
-		// 		     "simple-framebuffer";
-		// 	allwinner,pipeline = "de0-lcd0";
-		// 	clocks = <&ccu CLK_BUS_TCON0>, <&display_clocks 0>,
-		// 		 <&display_clocks 6>, <&ccu CLK_TCON0>;
-		// 	status = "disabled";
-		// };
+		simplefb_lcd: framebuffer@0 {
+			compatible = "allwinner,simple-framebuffer",
+				     "simple-framebuffer";
+			allwinner,pipeline = "de0-lcd0";
+			clocks = <&ccu CLK_BUS_TCON0>, <&display_clocks 0>,
+				 <&display_clocks 6>, <&ccu CLK_TCON0>;
+			status = "disabled";
+		};
 	};
 
 	cpus {
@@ -79,7 +80,7 @@
 	de: display-engine {
 		compatible = "allwinner,sun8i-v3s-display-engine";
 		allwinner,pipelines = <&mixer0>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	timer {
@@ -153,54 +154,49 @@
 			};
 		};
 
-		// syscon: syscon@1c00000 {
-		// 	compatible = "allwinner,sun8i-v3s-system-controller",
-		// 		"syscon";
-		// 	reg = <0x01c00000 0x1000>;
-		// };
-		syscon: syscon@1c00000 {
-			compatible = "allwinner,sun8i-v3s-system-controller", "allwinner,sun8i-h3-system-control", "syscon";
+		syscon: syscon0@1c00000 {
+			compatible = "allwinner,sun8i-v3s-system-controller","allwinner,sun8i-h3-system-control","syscon";
 			reg = <0x01c00000 0xd0>;
 			#address-cells = <1>;
-			#size-cells = <1>;
-			ranges;
+    			#size-cells = <1>;
+    			ranges;
 
 			sram_c: sram@1d00000 {
-				compatible = "mmio-sram";
-				reg = <0x01d00000 0x80000>;
-				#address-cells = <1>;
-				#size-cells = <1>;
-				ranges = <0 0x01d00000 0x80000>;
+       	 			compatible = "mmio-sram";
+        			reg = <0x01d00000 0x80000>;
+        			#address-cells = <1>;
+        			#size-cells = <1>;
+        			ranges = <0 0x01d00000 0x80000>;
 
-				ve_sram: sram-section@0 {
-					compatible = "allwinner,sun8i-v3s-sram-c", "allwinner,sun4i-a10-sram-c1";
-					reg = <0x000000 0x80000>;
-				};
-			};
+        			ve_sram: sram-section@0 {
+            				compatible = "allwinner,sun8i-v3s-sram-c", "allwinner,sun4i-a10-sram-c1";
+           		 		reg = <0x000000 0x80000>;
+        			};
+    			};
 		};
 
 		cedarx: video-codec@1c0e000 {
-			compatible = "allwinner,sun8i-v3-cedar";
-			reg = <0x01c0e000 0x1000>;
-			clocks = <&ccu CLK_BUS_VE>, <&ccu CLK_VE>, <&ccu CLK_DRAM_VE>;
-			clock-names = "ahb", "mod", "ram";
-			resets = <&ccu RST_BUS_VE>;
-			interrupts = <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>;
-			allwinner,sram = <&ve_sram 1>;
-			status = "disabled";
+    			compatible = "allwinner,sun8i-v3-cedar";
+   	 		reg = <0x01c0e000 0x1000>;
+    			clocks = <&ccu CLK_BUS_VE>, <&ccu CLK_VE>, <&ccu CLK_DRAM_VE>;
+    			clock-names = "ahb", "mod", "ram";
+    			resets = <&ccu RST_BUS_VE>;
+    			interrupts = <GIC_SPI 58 IRQ_TYPE_LEVEL_HIGH>;
+    			allwinner,sram = <&ve_sram 1>;
+    			status = "disabled";
 		};
-
+		
 		ion: ion {
-			compatible = "allwinner,sunxi-ion";
-			status = "disabled";
-			heap_cma@0{
-				compatible = "allwinner,cma";
-				heap-name  = "cma";
-				heap-id    = <0x4>;
-				heap-base  = <0x0>;
-				heap-size  = <0x0>;
-				heap-type  = "ion_cma";
-			};
+    			compatible = "allwinner,sunxi-ion";
+    			status = "disabled";
+    			heap_cma@0{
+       	 			compatible = "allwinner,cma";
+        			heap-name  = "cma";
+        			heap-id    = <0x4>;
+        			heap-base  = <0x0>;
+        			heap-size  = <0x0>;
+        			heap-type  = "ion_cma";
+    			};
 		};
 
 		tcon0: lcd-controller@1c0c000 {
@@ -245,6 +241,12 @@
 			resets = <&ccu RST_BUS_DMA>;
 			#dma-cells = <1>;
 		};
+
+		syscon0: syscon@1c00000 {
+                	compatible = "allwinner,sun8i-h3-system-controller",
+                               "syscon";
+                	reg = <0x01c00000 0x1000>;
+       		};
 
 		mmc0: mmc@1c0f000 {
 			compatible = "allwinner,sun7i-a20-mmc";
@@ -389,15 +391,33 @@
 				drive-strength = <40>;
 			};
 
-			//i2c0_pins: i2c0-pins {  //origin zero
-			i2c0_pins: i2c0 {
+			i2c0_pins: i2c0-pins {
 				pins = "PB6", "PB7";
 				function = "i2c0";
 			};
 
-			i2c1_pins: i2c1 {
-				pins = "PE21", "PE22";
-				function = "i2c1";
+			i2c1_pins: i2c1-pins {
+                                pins = "PE21", "PE22";
+                                function = "i2c1";
+                        };
+
+			csi1_8bit: csi1-8bit@0 {
+				pins = "PE8", "PE9", "PE10",
+				"PE11","PE12", "PE13", "PE14", "PE15";
+				bias-pullup;
+				function = "csi";
+			};
+
+			csi1_clk: csi1-clk@0 {
+				pins = "PE0", "PE2", "PE3";
+				bias-pullup;
+				function = "csi";
+			};
+
+			csi1_mclk: csi1-mclk@0 {
+				pins = "PE1";
+				bias-pullup;
+				function = "csi";
 			};
 
 			pwm0_pins: pwm0 {
@@ -427,8 +447,8 @@
 			};
 
 			mmc1_pins: mmc1-pins {
-				pins = "PG0", "PG1",
-				       "PG4", "PG5","PB2", "PB3","PB4", "PB5";
+				pins = "PG0", "PG1", "PG2", "PG3",
+				       "PG4", "PG5";
 				function = "mmc1";
 				drive-strength = <30>;
 				bias-pull-up;
@@ -437,13 +457,6 @@
 			spi0_pins: spi0-pins {
 				pins = "PC0", "PC1", "PC2", "PC3";
 				function = "spi0";
-			};
-
-			misc_pin:misc{
-				pins = "PB0", "PB1","PB2", "PB3","PB4", "PB5";
-				function = "gpio_out";
-				drive-strength = <30>;
-				bias-pull-up;
 			};
 		};
 
@@ -553,7 +566,21 @@
 			#size-cells = <0>;
 		};
 
-		emac: ethernet@1c30000 {
+		csi1: csi@1cb4000 {
+			compatible = "allwinner,sun8i-v3s-csi";
+			reg = <0x01cb4000 0x1000>;
+			interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
+			clocks = <&ccu CLK_BUS_CSI>,
+                 	<&ccu CLK_CSI1_SCLK>,
+                 	<&ccu CLK_DRAM_CSI>;
+       			clock-names = "bus",
+                      		"mod",
+                      		"ram";
+			resets = <&ccu RST_BUS_CSI>;
+			status = "disabled";
+		};
+
+		emac: ethernet0@1c30000 {
 			compatible = "allwinner,sun8i-h3-emac";
 			syscon = <&syscon>;
 			reg = <0x01c30000 0x10000>;
@@ -609,9 +636,36 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&spi0_pins>;
 			resets = <&ccu RST_BUS_SPI0>;
+			status = "disabled";
 			#address-cells = <1>;
 			#size-cells = <0>;
 		};
+		/*
+		emac0: ethernet@1c30000 {
+                	compatible = "allwinner,sun8i-h3-emac";
+                	syscon = <&syscon>;
+                	reg = <0x01c30000 0x104>;
+                	interrupts = <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>;
+                	interrupt-names = "macirq";
+               		resets = <&ccu RST_BUS_EMAC>;
+                	reset-names = "stmmaceth";
+                	clocks = <&ccu CLK_BUS_EMAC>;
+                	clock-names = "stmmaceth";
+                	#address-cells = <1>;
+               		#size-cells = <0>;
+               		status = "disabled";
+
+                       mdio0: mdio {
+                               #address-cells = <1>;
+                               #size-cells = <0>;
+                               int_mii_phy0: ethernet-phy@0 {
+                                       compatible = "ethernet-phy-ieee802.3-c22";
+                                       reg = <1>;
+                                       clocks = <&ccu CLK_BUS_EPHY>;
+                                       resets = <&ccu RST_BUS_EPHY>;
+                               };
+                       };
+               };*/
 
 		gic: interrupt-controller@1c81000 {
 			compatible = "arm,gic-400";
@@ -622,16 +676,6 @@
 			interrupt-controller;
 			#interrupt-cells = <3>;
 			interrupts = <GIC_PPI 9 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_HIGH)>;
-		};
-
-		csi1: csi@1cb4000 {
-			compatible = "allwinner,sun8i-v3s-csi";
-			reg = <0x01cb4000 0x3000>;
-			interrupts = <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>;
-			clocks = <&ccu CLK_BUS_CSI>, <&ccu CLK_CSI1_SCLK>, <&ccu CLK_DRAM_CSI>;
-			clock-names = "bus", "mod", "ram";
-			resets = <&ccu RST_BUS_CSI>;
-			status = "disabled";
 		};
 	};
 };
