@@ -397,9 +397,9 @@
 			};
 
 			i2c1_pins: i2c1-pins {
-                                pins = "PE21", "PE22";
-                                function = "i2c1";
-                        };
+				pins = "PE21", "PE22";
+				function = "i2c1";
+			};
 
 			csi1_8bit: csi1-8bit@0 {
 				pins = "PE8", "PE9", "PE10",

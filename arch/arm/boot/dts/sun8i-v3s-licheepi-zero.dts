@@ -100,11 +100,11 @@
 
 &i2c0 {
 	status = "okay";
-
-	ns2009: ns2009@48 {
-		compatible = "nsiway,ns2009";
-		reg = <0x48>;
-	};
+	// ns2009: ns2009@48 {
+	// 	status = "disabled";
+	// 	compatible = "nsiway,ns2009";
+	// 	reg = <0x48>;
+	// };
 };
 
 &ohci0 {

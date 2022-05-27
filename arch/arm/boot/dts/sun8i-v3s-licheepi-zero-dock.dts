@@ -153,17 +153,16 @@
 };
 
 &i2c0 {
-	gt911: touchscreen@14 {
-		status = "disabled";
-        compatible = "goodix,gt911";
-        reg = <0x5d>;
-        interrupt-parent = <&pio>;
-        interrupts = <1 5 IRQ_TYPE_EDGE_FALLING>; /* (PB5) */
-        pinctrl-names = "default";
-        irq-gpios = <&pio 1 5 GPIO_ACTIVE_HIGH>; /* (PB5) */
-        reset-gpios = <&pio 2 1 GPIO_ACTIVE_HIGH>; /* RST (PC1) */
-        /* touchscreen-swapped-x-y */
-    };
+	mpu9250@68{
+		status = "okay";
+		compatible = "lichee,mpu9250";
+		reg = <0x68>;
+	};
+
+	ap3216c@1e { 
+		compatible = "alientek,ap3216c";
+		reg = <0x1e>; 
+		 };
 };
 
 &de {
@@ -212,7 +211,7 @@
 	// 	hsync-active = <0>;
 	// 	vsync-active = <0>;
 	//     pclk-sample = <1>;
-	// 	};
+	//  };
 	// };
  };
 
@@ -222,26 +221,6 @@
 	pinctrl-0 = <&i2c1_pins>;
 	pinctrl-names = "default";
 	status = "okay";
-
-	ov2640: camera@30 {
-	compatible = "ovti,ov2640";
-	reg = <0x30>;
-	pinctrl-0 = <&csi1_mclk>;
-	pinctrl-names = "default";
-	clocks = <&ccu CLK_CSI1_MCLK>;
-	clock-names = "xvclk";
-	assigned-clock-rates = <24000000>;
-
-		port {
-			ov2640_ep: endpoint {
-				remote-endpoint = <&csi1_ep>;
-				bus-width = <10>;
-				hsync-active = <0>;
-				vsync-active = <0>;
-				pclk-sample = <1>;
-			};
-		};
-	};
 
 	ov5640: camera@3c {
 		compatible = "ovti,ov5640";
@@ -295,8 +274,8 @@
 		compatible = "sitronix,st7789v";
 		reg = <0>;
 		spi-max-frequency = <35000000>;
-		dc = <&pio 1 5 GPIO_ACTIVE_HIGH>;
-		reset = <&pio 1 4 GPIO_ACTIVE_HIGH>;	//PB5
+		reset = <&pio 1 4 GPIO_ACTIVE_HIGH>;
+		dc 	  = <&pio 1 5 GPIO_ACTIVE_HIGH>;
 		rotation = <270>;
 		buswidth =<8>; 
 		rgb;
@@ -308,5 +287,4 @@
         height= <240>;
 		status = "okay";
 	};
-
 };

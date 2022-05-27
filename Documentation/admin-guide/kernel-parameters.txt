@@ -5156,7 +5156,7 @@
 			Default is 1, i.e. UTF-8 mode is enabled for all
 			newly opened terminals.
 
-	vt.global_cursor_default=
+	vt.global_cursor_default= 0
 			[VT]
 			Format=<-1|0|1>
 			Set system-wide default for whether a cursor
