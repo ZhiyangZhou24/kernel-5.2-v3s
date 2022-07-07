@@ -59,7 +59,7 @@
 	
 	leds {
 		compatible = "gpio-leds";
-		status = "disabled";
+		status = "okay";
 
 		blue_led {
 			label = "licheepi:blue:usr";
